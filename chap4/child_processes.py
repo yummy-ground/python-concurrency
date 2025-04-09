@@ -1,32 +1,55 @@
-import time
+"""
+Forking Child Process
+"""
+
+import os
 from multiprocessing import Process
 
 
-class Worker(Process):
-    def run(self) -> None:
-        print("> Worker started...")
-        time.sleep(2)
-        print("> Worker exited...")
+def run_child() -> None:
+    print("===== Children Process =====")
+
+    print(f"> Child PID : {os.getpid()}")
+    print(f"> Parent PID : {os.getppid()}") # 'p'arent 'p'rocess 'id'
+
+    print("============================")
 
 
-def main() -> None:
-    print("> Request to Worker")
-    worker = Worker()
+def start_parent(children_num: int) -> None:
+    print("===== Parent Process =====")
 
-    print("> Start Worker")
-    worker.start()
-    print(f"\tis Worker alive?: {worker.is_alive()}")
+    print(f"> PID : {os.getpid()}")  # 'p'arent 'p'rocess 'id'
+    # Spawning/Forking New Process
+    for i in range(children_num):
+        print(f"> Start Child Process ({i})")
+        Process(target=run_child).start()
 
-    print("> Make Worker rest")
-    time.sleep(2)
-    print(f"\tis Worker alive?: {worker.is_alive()}")
-
-    print("> Wait for Worker until the Worker finish the job and join")
-    worker.join() # 실질적으로 작업 수행
-    print(f"\tis Worker alive?: {worker.is_alive()}")
-
-    print("> Finish Worker")
+    print("==========================")
+    pass
 
 
 if __name__ == '__main__':
-    main()
+    children_num = 3
+    start_parent(children_num)
+
+
+"""
+===== Parent Process =====
+> PID : 56313
+> Start Child Process (0)
+> Start Child Process (1)
+> Start Child Process (2)
+==========================
+===== Children Process =====
+> Child PID : 56315
+> Parent PID : 56313
+============================
+===== Children Process =====
+> Child PID : 56316
+> Parent PID : 56313
+============================
+===== Children Process =====
+> Child PID : 56317
+> Parent PID : 56313
+============================
+"""
